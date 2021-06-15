@@ -130,3 +130,6 @@ dmypy.json
 
 # project configuration
 dwh.cfg
+
+# IDE
+.vscode
