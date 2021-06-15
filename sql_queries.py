@@ -168,23 +168,23 @@ user_table_insert = ("""
 
 song_table_insert = ("""
     INSERT INTO songs (song_id, title, artist_id, year, duration)
-    SELECT song_id, title, artist_id, year, duration    
+    SELECT DISTINCT (song_id), title, artist_id, year, duration    
     FROM staging_songs
 """)
 
 artist_table_insert = ("""
     INSERT INTO artists (artist_id, name, location, latitude, longitude)
     SELECT DISTINCT(artist_id) as artist_id,
-        artist_latitude as latitude,
-        artist_longitude as longitude,
+        artist_name as name,
         artist_location as location,
-        artist_name as name
-    FROM staging_songs        
+        nullif(artist_latitude,'') as latitude,
+        nullif(artist_longitude,'') as longitude                
+    FROM staging_songs
 """)
 
 time_table_insert = ("""
     INSERT into time (start_time, hour, day, month, week, weekday, year)
-        SELECT TIMESTAMP 'epoch' + ts/1000 * INTERVAL '1 second' as start_time,
+        SELECT DISTINCT (TIMESTAMP 'epoch' + ts/1000 * INTERVAL '1 second') as start_time,
         DATE_PART(hrs, start_time) as hour,
         DATE_PART(day, start_time) as day,
         DATE_PART(mon, start_time) as month,
