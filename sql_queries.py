@@ -4,10 +4,10 @@ import configparser
 # CONFIG
 config = configparser.ConfigParser()
 config.read('dwh.cfg')
-DWH_ROLE_ARN = config.get("IAM_ROLE","ARN")
-LOG_DATA = config.get("S3","LOG_DATA")
-LOG_JSONPATH = config.get("S3","LOG_JSONPATH")
-SONG_DATA = config.get("S3","SONG_DATA")
+DWH_ROLE_ARN = config.get("IAM_ROLE", "ARN")
+LOG_DATA = config.get("S3", "LOG_DATA")
+LOG_JSONPATH = config.get("S3", "LOG_JSONPATH")
+SONG_DATA = config.get("S3", "SONG_DATA")
 
 # DROP TABLES
 
@@ -21,7 +21,7 @@ time_table_drop = "DROP TABLE IF EXISTS time"
 
 # CREATE TABLES
 
-staging_events_table_create= ("""
+staging_events_table_create = ("""
     CREATE TABLE staging_events (
         artist varchar,
         auth varchar,
@@ -121,14 +121,14 @@ time_table_create = ("""
 # STAGING TABLES
 
 staging_events_copy = ("""
-    copy {} from '{}' 
+    copy {} from '{}'
     credentials 'aws_iam_role={}'
     region 'us-west-2'
     json 's3://udacity-dend/log_json_path.json';
 """).format('staging_events', LOG_DATA, DWH_ROLE_ARN)
 
 staging_songs_copy = ("""
-    copy {} from '{}' 
+    copy {} from '{}'
     credentials 'aws_iam_role={}'
     format as json 'auto' region 'us-west-2';
 """).format('staging_songs', SONG_DATA, DWH_ROLE_ARN)
@@ -159,7 +159,7 @@ songplay_table_insert = ("""
     JOIN artists a ON (se.artist = a.name)
 """)
 
-user_table_insert = ("""      
+user_table_insert = ("""
     INSERT INTO users (user_id, first_name, last_name, gender, level)
     SELECT DISTINCT (user_id), first_name, last_name, gender, level
     FROM staging_events
@@ -168,7 +168,7 @@ user_table_insert = ("""
 
 song_table_insert = ("""
     INSERT INTO songs (song_id, title, artist_id, year, duration)
-    SELECT DISTINCT (song_id), title, artist_id, year, duration    
+    SELECT DISTINCT (song_id), title, artist_id, year, duration
     FROM staging_songs
 """)
 
@@ -178,13 +178,14 @@ artist_table_insert = ("""
         artist_name as name,
         artist_location as location,
         nullif(artist_latitude,'') as latitude,
-        nullif(artist_longitude,'') as longitude                
+        nullif(artist_longitude,'') as longitude
     FROM staging_songs
 """)
 
 time_table_insert = ("""
     INSERT into time (start_time, hour, day, month, week, weekday, year)
-        SELECT DISTINCT (TIMESTAMP 'epoch' + ts/1000 * INTERVAL '1 second') as start_time,
+        SELECT DISTINCT (TIMESTAMP 'epoch' + ts/1000 * INTERVAL '1 second')
+            as start_time,
         DATE_PART(hrs, start_time) as hour,
         DATE_PART(day, start_time) as day,
         DATE_PART(mon, start_time) as month,
@@ -196,7 +197,29 @@ time_table_insert = ("""
 
 # QUERY LISTS
 
-create_table_queries = [staging_events_table_create, staging_songs_table_create, artist_table_create, time_table_create, user_table_create, song_table_create, songplay_table_create]
-drop_table_queries = [staging_events_table_drop, staging_songs_table_drop, songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
+create_table_queries = [
+    staging_events_table_create,
+    staging_songs_table_create,
+    artist_table_create,
+    time_table_create,
+    user_table_create,
+    song_table_create,
+    songplay_table_create
+    ]
+drop_table_queries = [
+    staging_events_table_drop,
+    staging_songs_table_drop,
+    songplay_table_drop,
+    user_table_drop,
+    song_table_drop,
+    artist_table_drop,
+    time_table_drop
+    ]
 copy_table_queries = [staging_songs_copy, staging_events_copy]
-insert_table_queries = [user_table_insert, time_table_insert, artist_table_insert, song_table_insert, songplay_table_insert]
+insert_table_queries = [
+    user_table_insert,
+    time_table_insert,
+    artist_table_insert,
+    song_table_insert,
+    songplay_table_insert
+    ]
