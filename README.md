@@ -97,7 +97,7 @@ users in the app
 | user_id       | int (PK)      |
 | first_name    | varchar       |
 | last_name     | varchar       |
-| gender        | varchar       |
+| gender        | char(1)       |
 | level         | varchar       |
 
 ### songs
@@ -109,7 +109,7 @@ songs in music database
 | title         | varchar       |
 | artist_id     | varchar (FK)  |
 | year          | int           |
-| duration      | float         |
+| duration      | numeric       |
 
 ### artists
 artists in music database
@@ -132,13 +132,3 @@ timestamps of records in songplays broken down into specific units
 | month         | int           |
 | year          | int           |
 | weekday       | int           |
-
-## ERD
-![Entity Relationship Diagram](sparkifydb_erd.png "Entity Relationship Diagram")
-
-## Process
-Discuss the purpose of this database in context of the startup, Sparkify, and their analytical goals.
-State and justify your database schema design and ETL pipeline.
-[Optional] Provide example queries and results for song play analysis.
-
-The README file includes a summary of the project, how to run the Python scripts, and an explanation of the files in the repository. Comments are used effectively and each function has a docstring.
